@@ -6,12 +6,14 @@ Data Structures Section 1
 Assignment 5
 */
 #pragma once
+#include "Person.h"
 #include <fstream>
 using namespace std;
-class Student
+class Student : Person
 {
 public:
 	Student();
+	Student(int id, string name, string year, string major, double gpa, int advisor);
 	~Student();
 
 	//variables

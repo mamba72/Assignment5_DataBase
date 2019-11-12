@@ -8,6 +8,26 @@ Assignment 5
 
 #include "Student.h"
 
+Student::Student()
+{
+
+}
+
+Student::Student(int id, string name, string year, string major, double gpa, int advisor)
+{
+	this->id = id;
+	this->name = name;
+	this->level = year;
+	this->major = major;
+	this->gpa = gpa;
+	this->advisor = advisor;
+}
+
+Student::~Student()
+{
+
+}
+
 //overloaded << operator function
 ostream& operator<<(ostream& fileOut, const Student& obj)
 {

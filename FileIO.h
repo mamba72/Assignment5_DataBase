@@ -10,57 +10,45 @@ Assignment 5
 #include "GenBST.h"
 #include "Faculty.h"
 #include "Student.h"
+#include <fstream>
 
 //template<class T>
 class FileIO
 {
 private:
 	//static GenBST<T>* ReadTree();
+	static const string studentFileName;
+	const static string facultyFileName;
+
 public:
 
 	//FileIO();
 	//~FileIO();
 
-	static GenBST<Student>* ReadStudentTree();
-	static GenBST<Faculty>* ReadFacultyTree();
+	static GenBST<int, Student*>* ReadStudentTree();
+	static GenBST<int, Faculty*>* ReadFacultyTree(string fileName = facultyFileName);
 
 	//static bool WriteTree(GenBST<T>* tree);
-	static bool WriteStudentTree(GenBST<Student>* tree);
-	//static bool WriteFacultyTree(GenBST<Faculty>* tree);
+	static bool WriteStudentTree(GenBST<int, Student*>* tree);
+	static bool WriteFacultyTree(GenBST<int, Faculty*>* tree);
+
+	static bool WriteBackupOfTrees(GenBST<int, Student*> studentTree, GenBST<int, Faculty*> facultyTree);
 };
 
-/*
-bool FileIO::WriteStudentTree(GenBST<Student>* tree)
+
+//exception to tell whether the file could be opened
+class CouldNotOpenFileException : public std::runtime_error
 {
-
-}
-*/
-
-
-//the main function that will be doing the actual reading
-/*
-template<class T>
-GenBST<T>* FileIO<T>::ReadTree()
-{
-	if (new T == new Student)
+	//const char* msg;
+public:
+	CouldNotOpenFileException(const char* msg) : std::runtime_error(msg)
 	{
-
+		//this->msg = msg;
 	}
-	GenBST<T>* myTree = new GenBST<T>();
-	return myTree;
 
-}
-
-template<class T>
-GenBST<Student>* FileIO<T>::ReadStudentTree()
-{
-	GenBST<Student>* myTree = ReadTree<Student>();
-	return myTree;
-}
-
-template<class T>
-GenBST<Faculty>* FileIO<T>::ReadFacultyTree()
-{
-
-}
-*/
+	CouldNotOpenFileException(string msg) : std::runtime_error(msg.c_str())
+	{
+		//convert the string to a const char*
+		//this->msg = msg.c_str();
+	}
+};

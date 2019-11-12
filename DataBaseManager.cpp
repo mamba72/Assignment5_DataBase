@@ -7,3 +7,13 @@ Assignment 5
 */
 
 #include "DataBaseManager.h"
+
+DataBaseManager::DataBaseManager()
+{
+
+}
+
+DataBaseManager::~DataBaseManager()
+{
+
+}

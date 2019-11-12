@@ -17,59 +17,60 @@ NOTE: the "inline" at the beginning of functions was created by visual studio's 
 Not entirely sure what it does
 */
 
-template <class T>
+template <class T, class D>
 class GenBST
 {
 private:
-	GenTreeNode<T>* root; //pointer to root
-	GenTreeNode<T>* getSuccessor(GenTreeNode<T>* curr);
+	GenTreeNode<T, D>* root; //pointer to root
+	GenTreeNode<T, D>* getSuccessor(GenTreeNode<T, D>* curr);
 
 public:
 	GenBST();
 	~GenBST();
 
-	bool search(T value); //value is also the key in this situation. this will return whether we have it. Should change this to return the value?
-	void insert(T value);
+	bool contains(D value); //value is also the key in this situation. this will return whether we have it. Should change this to return the value?
+	void insert(T key, D data);
 
 	//delete placeholder
-	bool deleteNode(T value);
+	bool deleteNode(D value);
+	bool deleteNode(T key);
 
 	//helper functions:
 	bool isEmpty();
-	GenTreeNode<T>* getMin();
-	GenTreeNode<T>* getMax();
+	GenTreeNode<T, D>* getMin();
+	GenTreeNode<T, D>* getMax();
 	void printTree();
-	void recPrint(GenTreeNode<T>* node);
-
+	void recPrint(GenTreeNode<T, D>* node);
+	GenTreeNode<T, D>* peek();
 
 
 };
 
-template<class T>
-GenBST<T>::GenBST()
+template<class T, class D>
+GenBST<T, D>::GenBST()
 {
 	root = NULL; //empty tree
 }
 
-template<class T>
-GenBST<T>::~GenBST()
+template<class T, class D>
+GenBST<T, D>::~GenBST()
 {
 	//we need to research this
 }
 
 //pretty much equivalent to a contains function
-template<class T>
-bool GenBST<T>::search(T value)
+template<class T, class D>
+bool GenBST<T, D>::contains(D value)
 {
 	if (root == NULL)//empty tree, so it cant be there.
 		return false;
 	else//tree is not empty, find value
 	{
-		GenTreeNode<T>* curr = root;
+		GenTreeNode<T, D>* curr = root;
 
-		while (curr->key != value) //while we havent found it, keep searching
+		while (curr->data != value) //while we havent found it, keep searching
 		{
-			if (value < curr->key)
+			if (value < curr->data)
 			{
 				curr = curr->left;
 			}
@@ -86,10 +87,10 @@ bool GenBST<T>::search(T value)
 	return true;
 }
 
-template<class T>
-void GenBST<T>::insert(T value)
+template<class T, class D>
+void GenBST<T, D>::insert(T key, D data)
 {
-	GenTreeNode<T>* node = new GenTreeNode<T>(value);
+	GenTreeNode<T, D>* node = new GenTreeNode<T, D>(key, data);
 
 	if (root == NULL)//empty tree
 	{
@@ -97,8 +98,8 @@ void GenBST<T>::insert(T value)
 	}
 	else//tree is not empty, so we need to find the location to insert
 	{
-		GenTreeNode<T>* curr = root;
-		GenTreeNode<T>* parent = NULL;
+		GenTreeNode<T, D>* curr = root;
+		GenTreeNode<T, D>* parent = NULL;
 
 		while (curr != NULL)//could also do while true
 		{
@@ -106,7 +107,7 @@ void GenBST<T>::insert(T value)
 			parent = curr;
 
 			//if the value is less than the current node, go left
-			if (value < curr->key)
+			if (key < curr->key)
 			{
 				curr = curr->left;//going left
 				if (curr == NULL)//we found the insertion point
@@ -129,23 +130,23 @@ void GenBST<T>::insert(T value)
 }
 
 //delete the node with the given key
-template<class T>
-bool GenBST<T>::deleteNode(T value)
+template<class T, class D>
+bool GenBST<T, D>::deleteNode(D value)
 {
 	//if its empty, then you cant delete anything. so return false
 	if (root == NULL)
 		return false;
 
-	GenTreeNode<T>* curr = root;
-	GenTreeNode<T>* parent = root;
+	GenTreeNode<T, D>* curr = root;
+	GenTreeNode<T, D>* parent = root;
 	bool isLeft = true;//determine if the current node is left or right child
 
 	//now look for the node.
-	while (curr->key != value) //while we havent found it, keep searching
+	while (curr->data != value) //while we havent found it, keep searching
 	{
 		parent = curr;
 
-		if (value < curr->key)
+		if (value < curr->data)
 		{
 			isLeft = true;
 			curr = curr->left;
@@ -214,7 +215,114 @@ bool GenBST<T>::deleteNode(T value)
 	//the node to be deleted has two children
 	else
 	{
-		GenTreeNode<T>* successor = getSuccessor(curr);
+		GenTreeNode<T, D>* successor = getSuccessor(curr);
+
+		if (curr == root)
+		{
+			root = successor;
+		}
+		else if (isLeft)
+		{
+			parent->left = successor;
+		}
+		else
+		{
+			parent->right = successor;
+		}
+
+		successor->left = curr->left;
+	}
+	return true;
+}
+
+
+//delete the node with the given key
+template<class T, class D>
+bool GenBST<T, D>::deleteNode(T key)
+{
+	//if its empty, then you cant delete anything. so return false
+	if (root == NULL)
+		return false;
+
+	GenTreeNode<T, D>* curr = root;
+	GenTreeNode<T, D>* parent = root;
+	bool isLeft = true;//determine if the current node is left or right child
+
+	//now look for the node.
+	while (curr->key != key) //while we havent found it, keep searching
+	{
+		parent = curr;
+
+		if (key < curr->key)
+		{
+			isLeft = true;
+			curr = curr->left;
+		}
+		else
+		{
+			isLeft = false;
+			curr = curr->right;
+		}
+
+		if (curr == NULL)//we didnt find the value, so return false
+			return false;
+	}
+	//finished finding the node.
+	//if we made it here, we found the node to delete
+
+	//now check all the different cases
+
+	//no children
+	if (curr->left == NULL && curr->right == NULL) //means we have a leaf
+	{
+		if (curr == root)//the tree only has one entry
+			root = NULL;
+		else if (isLeft)
+		{
+			parent->left = NULL;
+		}
+		else
+			parent->right = NULL;
+	}
+
+	//now check if its an exterior node (a node with only 1 child)
+	//we need to determine if child is left or right, then proceed
+	else if (curr->right == NULL)//has no right child
+	{
+		if (curr == root)
+		{
+			root = curr->left;
+		}
+		else if (isLeft)
+		{
+			parent->left = curr->left;
+		}
+		else
+		{
+			parent->right = curr->left;
+		}
+	}
+	//pretty much the opposite of the previous else statement
+	else if (curr->left == NULL)//has no left child
+	{
+		if (curr == root)
+		{
+			root = curr->right;
+		}
+		else if (isLeft)
+		{
+			parent->left = curr->right;
+		}
+		else
+		{
+			parent->right = curr->right;
+		}
+	}
+
+	//the node to be deleted has two children
+	else
+	{
+		GenTreeNode<T, D>* successor = getSuccessor(curr);
 
 		if (curr == root)
 		{
@@ -235,14 +343,14 @@ bool GenBST<T>::deleteNode(T value)
 }
 
 //private helper method
-template <class T>
-GenTreeNode<T>* GenBST<T>::getSuccessor(GenTreeNode<T>* d)
+template <class T, class D>
+GenTreeNode<T, D>* GenBST<T, D>::getSuccessor(GenTreeNode<T, D>* d)
 {
 	//go right one from current, then all the way down to the left
 	//to get the lowest node greater than D
-	GenTreeNode<T>* sp = d; //sp is successor's parent and is initialized to D
-	GenTreeNode<T>* successor = d;
-	GenTreeNode<T>* current = d->right;//start one to the right
+	GenTreeNode<T, D>* sp = d; //sp is successor's parent and is initialized to D
+	GenTreeNode<T, D>* successor = d;
+	GenTreeNode<T, D>* current = d->right;//start one to the right
 
 	while (current != NULL)//now take the one to the right and go all the way to the left
 	{
@@ -262,10 +370,10 @@ GenTreeNode<T>* GenBST<T>::getSuccessor(GenTreeNode<T>* d)
 	return successor;
 }
 
-template<class T>
-GenTreeNode<T>* GenBST<T>::getMin()
+template<class T, class D>
+GenTreeNode<T, D>* GenBST<T, D>::getMin()
 {
-	GenTreeNode<T>* current = root;
+	GenTreeNode<T, D>* current = root;
 
 	if (current == NULL)//empty tree
 		return NULL;
@@ -278,10 +386,10 @@ GenTreeNode<T>* GenBST<T>::getMin()
 	return current;
 }
 
-template<class T>
-GenTreeNode<T>* GenBST<T>::getMax()
+template<class T, class D>
+GenTreeNode<T, D>* GenBST<T, D>::getMax()
 {
-	GenTreeNode<T>* current = root;
+	GenTreeNode<T, D>* current = root;
 
 	if (current == NULL)//empty tree
 		return NULL;
@@ -295,28 +403,35 @@ GenTreeNode<T>* GenBST<T>::getMax()
 }
 
 //prints the 
-template<class T>
-void GenBST<T>::printTree()
+template<class T, class D>
+void GenBST<T, D>::printTree()
 {
 	recPrint(root);
 }
 
-template<class T>
-void GenBST<T>::recPrint(GenTreeNode<T>* node)
+template<class T, class D>
+void GenBST<T, D>::recPrint(GenTreeNode<T, D>* node)
 {
 	if (node == NULL)
 		return;
 
 	recPrint(node->left);
-	cout << node->key << endl;
+	cout << node->key << "\t" << node->data << endl;
 	recPrint(node->right);
 }
 
-template<class T>
-bool GenBST<T>::isEmpty()
+template<class T, class D>
+bool GenBST<T, D>::isEmpty()
 {
 	if (root == NULL)
 		return true;
 	else
 		return false;
+}
+
+//returns the root node
+template<class T, class D>
+inline GenTreeNode<T, D>* GenBST<T, D>::peek()
+{
+	return root;
 }

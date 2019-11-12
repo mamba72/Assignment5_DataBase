@@ -5,9 +5,11 @@ stwhite@chapman.edu
 Data Structures Section 1
 Assignment 5
 */
+#include "Person.h"
 #pragma once
-class Faculty
+class Faculty : Person
 {
+
 public:
 	Faculty();
 	~Faculty();
