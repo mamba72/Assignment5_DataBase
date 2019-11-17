@@ -9,17 +9,8 @@ Assignment 5
 
 #include "FileIO.h"
 
-//the main function that will be doing the actual reading
-//template<class T>
-//GenBST<T>* FileIO<T>::ReadTree(T type)
-//{
-//	GenBST<T>* myTree = new GenBST<T>();
-//	return myTree;
-//
-//}
-
-const string FileIO::studentFileName = "studentTable";
-const string FileIO::facultyFileName = "facultyTable";
+const string FileIO::studentFileName = "studentTable.txt";
+const string FileIO::facultyFileName = "facultyTable.txt";
 
 /*
 This function will deserialize the student tree from the studentTable file and return it. 
@@ -30,17 +21,18 @@ GenBST<int, Student*>* FileIO::ReadStudentTree()
 	ifstream file;
 	file.open(studentFileName);
 
-	GenBST<int, Student*>* studentTree;
+	GenBST<int, Student*>* studentTree = new GenBST<int, Student*>(); //studentTree;
 
 	//if the file cant be opened, create an empty bst
 	if (file.is_open() == false)
-		return new GenBST<int, Student*>(); //studentTree;
-
+	{
+		return studentTree;
+	}
+		
 	//read the file
 	file.read((char*)&studentTree, sizeof(studentTree));
 
 	return studentTree;
-
 }
 
 /*
@@ -56,7 +48,7 @@ GenBST<int, Faculty*>* FileIO::ReadFacultyTree(string fileName)
 
 	//if the file cant be opened, create an empty bst
 	if (file.is_open() == false)
-		return new GenBST<int, Faculty* > (); //facultyTree;
+		return new GenBST<int, Faculty*> (); //facultyTree;
 
 	//read the file
 	file.read((char*)&facultyTree, sizeof(facultyTree));
@@ -64,20 +56,20 @@ GenBST<int, Faculty*>* FileIO::ReadFacultyTree(string fileName)
 	return facultyTree;
 }
 
-bool FileIO::WriteStudentTree(GenBST<int, Student*>* tree)
-{
-	ofstream file_obj;
-	//open the file
-	file_obj.open(studentFileName);
-
-	//if the file didnt open, return false
-	if (file_obj.is_open() == false)
-		return false;
-
-	//write the object to the file
-	file_obj.write((char*)&tree, sizeof(tree));
-	return true;
-}
+//bool FileIO::WriteStudentTree(GenBST<int, Student*>* tree)
+//{
+//	ofstream file_obj;
+//	//open the file
+//	file_obj.open(studentFileName);
+//
+//	//if the file didnt open, return false
+//	if (file_obj.is_open() == false)
+//		return false;
+//
+//	//write the object to the file
+//	file_obj.write((char*)&tree, sizeof(tree));
+//	return true;
+//}
 
 bool FileIO::WriteFacultyTree(GenBST<int, Faculty*>* tree)
 {
@@ -94,9 +86,9 @@ bool FileIO::WriteFacultyTree(GenBST<int, Faculty*>* tree)
 	return true;
 }
 
-
-bool FileIO::WriteBackupOfTrees(GenBST<int, Student*> studentTree, GenBST<int, Faculty*> facultyTree)
+//using strings and doing it myself because the other way doesnt seem to work
+bool FileIO::WriteStudentTree(GenBST<int, Student*>* tree)
 {
+	
 
-	return false;
 }

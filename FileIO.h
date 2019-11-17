@@ -22,9 +22,6 @@ private:
 
 public:
 
-	//FileIO();
-	//~FileIO();
-
 	static GenBST<int, Student*>* ReadStudentTree();
 	static GenBST<int, Faculty*>* ReadFacultyTree(string fileName = facultyFileName);
 
@@ -32,7 +29,7 @@ public:
 	static bool WriteStudentTree(GenBST<int, Student*>* tree);
 	static bool WriteFacultyTree(GenBST<int, Faculty*>* tree);
 
-	static bool WriteBackupOfTrees(GenBST<int, Student*> studentTree, GenBST<int, Faculty*> facultyTree);
+	//static bool WriteBackupOfTrees(GenBST<int, Student*> studentTree, GenBST<int, Faculty*> facultyTree);
 };
 
 

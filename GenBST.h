@@ -8,6 +8,7 @@ Assignment 5
 #pragma once
 #include <iostream>
 #include "GenTreeNode.h"
+#include <fstream>
 
 using namespace std;
 
@@ -24,12 +25,17 @@ private:
 	GenTreeNode<T, D>* root; //pointer to root
 	GenTreeNode<T, D>* getSuccessor(GenTreeNode<T, D>* curr);
 
+	void serializeNode(GenTreeNode<T, D>* node, ofstream& file);
+	void deserialize(string fileName);
+
 public:
 	GenBST();
+	GenBST(string fileName);
 	~GenBST();
 
 	bool contains(D value); //value is also the key in this situation. this will return whether we have it. Should change this to return the value?
 	void insert(T key, D data);
+	D getNode(T key);
 
 	//delete placeholder
 	bool deleteNode(D value);
@@ -43,13 +49,61 @@ public:
 	void recPrint(GenTreeNode<T, D>* node);
 	GenTreeNode<T, D>* peek();
 
+	//serialization functions
+	void serialize(string fileName);
 
+
+	//helper vars
+	unsigned int numNodes;
+
+};
+
+struct TreeEmptyException : exception
+{
+	const char* what() const throw ()
+	{
+		return "This tree is empty, cannot remove.";
+	}
+};
+
+struct NodeNotFoundException : exception
+{
+	const char* what() const throw ()
+	{
+		return "This node could not be found.";
+	}
+};
+
+//exception to tell whether the file could be opened
+#pragma once
+class BSTCouldNotOpenFileException : public std::runtime_error
+{
+	//const char* msg;
+public:
+	BSTCouldNotOpenFileException(const char* msg) : std::runtime_error(msg)
+	{
+		//this->msg = msg;
+	}
+
+	BSTCouldNotOpenFileException(string msg) : std::runtime_error(msg.c_str())
+	{
+		//convert the string to a const char*
+		//this->msg = msg.c_str();
+	}
 };
 
 template<class T, class D>
 GenBST<T, D>::GenBST()
 {
 	root = NULL; //empty tree
+	numNodes = 0;
+}
+
+template<class T, class D>
+GenBST<T, D>::GenBST(string fileName)
+{
+	GenBST();
+	deserialize(fileName);
 }
 
 template<class T, class D>
@@ -127,6 +181,8 @@ void GenBST<T, D>::insert(T key, D data)
 			}
 		}
 	}
+	//increment the number of nodes
+	++numNodes;
 }
 
 //delete the node with the given key
@@ -135,7 +191,7 @@ bool GenBST<T, D>::deleteNode(D value)
 {
 	//if its empty, then you cant delete anything. so return false
 	if (root == NULL)
-		return false;
+		throw TreeEmptyException();
 
 	GenTreeNode<T, D>* curr = root;
 	GenTreeNode<T, D>* parent = root;
@@ -232,6 +288,8 @@ bool GenBST<T, D>::deleteNode(D value)
 
 		successor->left = curr->left;
 	}
+	//decrement the number of nodes
+	--numNodes;
 	return true;
 }
 
@@ -242,7 +300,7 @@ bool GenBST<T, D>::deleteNode(T key)
 {
 	//if its empty, then you cant delete anything. so return false
 	if (root == NULL)
-		return false;
+		throw TreeEmptyException();
 
 	GenTreeNode<T, D>* curr = root;
 	GenTreeNode<T, D>* parent = root;
@@ -339,6 +397,8 @@ bool GenBST<T, D>::deleteNode(T key)
 
 		successor->left = curr->left;
 	}
+	//decrement the number of nodes
+	--numNodes;
 	return true;
 }
 
@@ -376,7 +436,7 @@ GenTreeNode<T, D>* GenBST<T, D>::getMin()
 	GenTreeNode<T, D>* current = root;
 
 	if (current == NULL)//empty tree
-		return NULL;
+		throw TreeEmptyException();
 
 	while (current->left != NULL)
 	{
@@ -392,7 +452,7 @@ GenTreeNode<T, D>* GenBST<T, D>::getMax()
 	GenTreeNode<T, D>* current = root;
 
 	if (current == NULL)//empty tree
-		return NULL;
+		throw TreeEmptyException();
 
 	while (current->right != NULL)
 	{
@@ -406,7 +466,10 @@ GenTreeNode<T, D>* GenBST<T, D>::getMax()
 template<class T, class D>
 void GenBST<T, D>::printTree()
 {
-	recPrint(root);
+	if (root == NULL)
+		cout << "NULL" << endl;
+	else
+		recPrint(root);
 }
 
 template<class T, class D>
@@ -434,4 +497,100 @@ template<class T, class D>
 inline GenTreeNode<T, D>* GenBST<T, D>::peek()
 {
 	return root;
+}
+
+template<class T, class D>
+D GenBST<T, D>::getNode(T key)
+{
+	if (root == NULL)//empty tree, so it cant be there.
+		throw TreeEmptyException();
+	else//tree is not empty, find value
+	{
+		GenTreeNode<T, D>* curr = root;
+
+		while (curr->key != key) //while we havent found it, keep searching
+		{
+			if (key < curr->key)
+			{
+				curr = curr->left;
+			}
+			else
+			{
+				curr = curr->right;
+			}
+
+			if (curr == NULL)//we didnt find the value, so return false
+				throw NodeNotFoundException();
+		}
+
+		return curr->data;
+	}
+	
+}
+
+//returns the string of all the nodes
+template<class T, class D>
+void GenBST<T, D>::serialize(string fileName)
+{
+	ofstream file;
+	//file.open(fileName, ios::app);
+	file.open(fileName, ios::out | ios::binary);
+
+
+	serializeNode(root, file);
+	file.close();
+}
+
+template<class T, class D>
+void GenBST<T, D>::serializeNode(GenTreeNode<T, D>* node, ofstream& file)
+{
+	if (node == NULL)
+		return;
+
+	serializeNode(node->left, file);
+	file << node->key << endl;
+	file << *(node->data) << endl;
+	serializeNode(node->right, file);
+}
+
+template<class T, class D>
+void GenBST<T, D>::deserialize(string fileName)
+{
+	ifstream file;
+	file.open(fileName, ios::in | ios::binary);
+
+	if (file.is_open() == false)
+	{
+		cout << "File is not open" << endl;
+		throw BSTCouldNotOpenFileException("File by the name of " + fileName + " could not be opened.");
+	}
+	cout << "File is open" << endl;
+	int counter = 0;
+	//while the file still has lines, read in the objects
+	while (file.eof() == false)
+	{
+
+		cout << "Entered while loop" << endl;
+
+		T inKey;
+		D* obj;
+
+		cout << "Created objects" << endl;
+		string keyStr;
+		file >> keyStr;
+		cout << "read in key" << endl;
+		inKey = stoi(keyStr);
+		file >> **obj;
+
+		cout << "Printed to file" << endl;
+
+		string emptySpacerLine;
+		file >> emptySpacerLine;
+
+		insert(inKey, *obj);
+
+		cout << "Counter: " << counter << endl;
+		++counter;
+
+	}
 }
