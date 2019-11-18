@@ -12,10 +12,10 @@ class Person
 {
 protected:
 	//variables
-	/*int id;
+	int id;
 	string name;
 	string level;
-	string department;*/
+	string department;
 
 public:
 	Person();
@@ -34,8 +34,8 @@ public:
 
 	string serialize();
 
-	int id;
+	/*int id;
 	string name;
 	string level;
-	string department;
+	string department;*/
 };

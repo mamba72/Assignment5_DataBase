@@ -27,8 +27,11 @@ GenLinkedList<int>* Faculty::getAdvisees()
 //overloaded << operator function
 ostream& operator<<(ostream& fileOut, const Faculty& obj)
 {
-	// TODO: insert return statement here
-	fileOut << obj.id << "\n" << obj.name << "\n" << obj.department << "\n" << obj.level << endl; //obj.gpa << "\n" << obj.advisor << endl;
+	fileOut << obj.id << endl;
+	fileOut << obj.name << endl;
+	fileOut << obj.level << endl;
+	fileOut << obj.department << endl;
+	fileOut << obj.advisees << endl;
 	return fileOut;
 }
 
@@ -44,4 +47,9 @@ std::istream& operator>>(std::istream& fileIn, Faculty& obj)
 	//fileIn >> obj.advisor;
 
 	return fileIn;
+}
+
+void Faculty::addAdvisee(int studentId)
+{
+	advisees->insertFront(studentId);
 }

@@ -467,7 +467,8 @@ template<class T, class D>
 void GenBST<T, D>::printTree()
 {
 	if (root == NULL)
-		cout << "NULL" << endl;
+		//cout << "NULL" << endl;
+		throw TreeEmptyException();
 	else
 		recPrint(root);
 }
@@ -479,7 +480,7 @@ void GenBST<T, D>::recPrint(GenTreeNode<T, D>* node)
 		return;
 
 	recPrint(node->left);
-	cout << node->key << "\t" << node->data << endl;
+	cout <<"Key: " << node->key << "\nValue: " << *(node->data) << endl;
 	recPrint(node->right);
 }
 
@@ -525,7 +526,6 @@ D GenBST<T, D>::getNode(T key)
 
 		return curr->data;
 	}
-	
 }
 
 //returns the string of all the nodes

@@ -17,6 +17,8 @@ public:
 	~Faculty();
 
 	GenLinkedList<int>* getAdvisees();
+	void addAdvisee(int studentId);
+
 
 
 	//overloaded operator functions
