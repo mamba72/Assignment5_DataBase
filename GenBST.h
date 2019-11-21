@@ -22,13 +22,18 @@ template <class T, class D>
 class GenBST
 {
 private:
-	GenTreeNode<T, D>* root; //pointer to root
+	
+	const string MARKER = "\t\t";
+
 	GenTreeNode<T, D>* getSuccessor(GenTreeNode<T, D>* curr);
 
 	void serializeNode(GenTreeNode<T, D>* node, ofstream& file);
 	void deserialize(string fileName);
 
 public:
+
+	GenTreeNode<T, D>* root; //pointer to root
+
 	GenBST();
 	GenBST(string fileName);
 	~GenBST();
@@ -534,7 +539,10 @@ void GenBST<T, D>::serialize(string fileName)
 {
 	ofstream file;
 	//file.open(fileName, ios::app);
-	file.open(fileName, ios::out | ios::binary);
+	file.open(fileName, ios::out);
+
+	if (file.is_open() == false)
+		throw BSTCouldNotOpenFileException("The file by the name of " + fileName + " could not be opened.");
 
 
 	serializeNode(root, file);
@@ -545,7 +553,11 @@ template<class T, class D>
 void GenBST<T, D>::serializeNode(GenTreeNode<T, D>* node, ofstream& file)
 {
 	if (node == NULL)
+	{
+		file << MARKER << endl;
 		return;
+	}
+		
 
 	serializeNode(node->left, file);
 	file << node->key << endl;
@@ -557,7 +569,7 @@ template<class T, class D>
 void GenBST<T, D>::deserialize(string fileName)
 {
 	ifstream file;
-	file.open(fileName, ios::in | ios::binary);
+	file.open(fileName, ios::in);
 
 	if (file.is_open() == false)
 	{

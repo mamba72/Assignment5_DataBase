@@ -22,6 +22,7 @@ using namespace std;
 int getUserChoice();
 Student* GatherStudentInfoFromUser();
 Faculty* GatherFacultyInfoFromUser();
+void SerializeTesting();
 
 int main(int argc, char** argv)
 {
@@ -71,16 +72,28 @@ int main(int argc, char** argv)
 	//cout << "Number nodes: " << otherTestTree->numNodes << endl;
 
 
+
+	//SerializeTesting();
+	
+
+
+
 	DataBaseManager* db = new DataBaseManager();
 	cout << "Created DataBase\n";
 
-	//add some sample student and faculty objects because reading from file is broken
-	Faculty* rene = new Faculty(23, "Rene German", "Professor", "Computer Science");
-	db->addFaculty(rene);
-	cout << "Added faculty\n";
+	////add some sample student and faculty objects because reading from file is broken
+	//Faculty* rene = new Faculty(23, "Rene German", "Professor", "Computer Science");
+	//db->addFaculty(rene);
 
-	Student* studentTest = new Student(16, "Stephen White2", "Sophomore", "Compsci", 3.7, 23);
+	//Faculty* kendra = new Faculty(10, "Kendra Day", "Professor", "Ethics");
+	//db->addFaculty(kendra);
+	//cout << "Added faculty\n";
+
+	/*Student* studentTest = new Student(16, "Stephen White2", "Sophomore", "Compsci", 3.7, 23);
 	db->addStudent(studentTest);
+
+	Student* arshia = new Student(12, "Arshia Behzad", "Sophomore", "Compsci", 3.7, 10);
+	db->addStudent(arshia);*/
 
 
 
@@ -171,6 +184,10 @@ int main(int argc, char** argv)
 			{
 				cout << e.what() << endl;
 			}
+			catch (StudentHasNoAdvisorException e)
+			{
+				cout << e.what() << endl;
+			}
 			
 			break;
 		}
@@ -238,13 +255,62 @@ int main(int argc, char** argv)
 			break;
 		}
 		case 11://change students advisor given student id and new faculty id
+		{
+			int studentId;
+			string response;
+			cout << "Enter the student\'s id:" << endl;
+			cin >> response;
+
+			try
+			{
+				studentId = stoi(response);
+			}
+			catch (invalid_argument e)
+			{
+				cout << "Please enter a vaild student id. Ensure that it is an integer." << endl;
+				break;
+			}
+
+			int facultyId;
+			cout << "Enter the new advisor\'s id:" << endl;
+			cin >> response;
+
+			try
+			{
+				facultyId = stoi(response);
+			}
+			catch (invalid_argument e)
+			{
+				cout << "Please enter a vaild faculty id. Ensure that it is an integer." << endl;
+				break;
+			}
+
+			try
+			{
+				db->changeStudentsAdvisor(studentId, facultyId);
+			}
+			catch (StudentDoesntExistException e)
+			{
+				cout << e.what() << endl;
+			}
+			catch (FacultyDoesntExistException e)
+			{
+				cout << e.what() << endl;
+			}
+
 			break;
+		}
 		case 12://remove an advisee from a faculty member given the ids
+
 			break;
 		case 13://rollback
 			break;
 		case 14://if they chose exit
 			break;
+
+			//custom options!!!!!
+
+
 		}
 
 		//print a new line just to make it easier to read
@@ -260,6 +326,45 @@ int main(int argc, char** argv)
 
 
 	return 0;
+}
+
+
+void SerializeTesting()
+{
+	DataBaseManager* db = new DataBaseManager();
+	cout << "Created DataBase\n";
+
+	//add some sample student and faculty objects because reading from file is broken
+	Faculty* rene = new Faculty(23, "Rene German", "Professor", "Computer Science");
+	db->addFaculty(rene);
+
+	Faculty* kendra = new Faculty(10, "Kendra Day", "Professor", "Ethics");
+	db->addFaculty(kendra);
+	cout << "Added faculty\n";
+
+	Student* studentTest = new Student(16, "Stephen White2", "Sophomore", "Compsci", 3.7, 23);
+	db->addStudent(studentTest);
+
+	Student* arshia = new Student(12, "Arshia Behzad", "Sophomore", "Compsci", 3.7, 10);
+	db->addStudent(arshia);
+
+	FileIO::WriteStudentTree(db->masterStudent);
+	cout << "serialized tree" << endl;
+
+	ifstream fileIn;
+	fileIn.open("studentTable.txt");
+	cout << "Opened up file" << endl;
+	GenBST<int, Student*>* newTree = FileIO::deserializeStudentTree(fileIn);
+	cout << "Read from file" << endl;
+
+	cout << "Tree reference: " << newTree << endl;
+
+	cout << "Root reference: " << newTree->root << endl;
+
+	cout << "root data: " << *(newTree->root->data) << endl;
+
+
+	cout << "End testing" << endl;
 }
 
 
@@ -325,15 +430,19 @@ Student* GatherStudentInfoFromUser()
 	id = stoi(response);
 
 	cout << "Enter the first and last name of the student:" << endl;
-	cin >> name;
-	getline(cin, name);
+	cin.ignore();//ignore everything in the current cin buffer
+	response = "";
+	getline(cin, response);
+	name = response;
 
 	cout << "Enter the year (or level) in words of your student: " << endl;
 	cin >> level;
 
 	cout << "Enter the student\'s major:" << endl;
-	cin >> major;
-	getline(cin, major);
+	cin.ignore();
+	response = "";
+	getline(cin, response);
+	major = response;
 	
 	cout << "Enter the student\'s gpa: " << endl;
 	cin >> response;
@@ -352,29 +461,29 @@ Faculty* GatherFacultyInfoFromUser()
 {
 	string response = "";
 	int id;
-	string name;
+	string name = "";
 	string level;
 	string major;
-	//double gpa;
-	//int advisorId;
 
 	cout << "Enter the ID of the faculty member:" << endl;
-	getline(cin,response);
+	cin >> response;
 
 	id = stoi(response);
 
 	cout << "Enter the first and last name of the faculty member:" << endl;
-	//cin >> response;
+	cin.ignore();
+	response = "";
 	getline(cin, response);
-
 	name = response;
 
-	cout << "Enter the title of the faculty member: " << endl;
-	getline(cin,level);
+	cout << "Enter the job title of the faculty member (professor, stuff like that): " << endl;
+	cin >> level;
 
 	cout << "Enter the faculty member\'s department:" << endl;
-	//cin >> major;
-	getline(cin, major);
+	cin.ignore();
+	response = "";
+	getline(cin, response);
+	major = response;
 
 	return new Faculty(id, name, level, major);
 }

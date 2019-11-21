@@ -31,7 +31,7 @@ ostream& operator<<(ostream& fileOut, const Faculty& obj)
 	fileOut << obj.name << endl;
 	fileOut << obj.level << endl;
 	fileOut << obj.department << endl;
-	fileOut << obj.advisees << endl;
+	fileOut << *(obj.advisees) << endl;
 	return fileOut;
 }
 
@@ -52,4 +52,9 @@ std::istream& operator>>(std::istream& fileIn, Faculty& obj)
 void Faculty::addAdvisee(int studentId)
 {
 	advisees->insertFront(studentId);
+}
+
+bool Faculty::removeAdvisee(int studentId)
+{
+	advisees->remove(studentId);
 }

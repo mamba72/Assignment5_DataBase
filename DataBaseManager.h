@@ -42,6 +42,7 @@ public:
 
 	bool deleteFaculty(int id);
 	bool deleteStudent(int id);
+	//given new faculty id
 	bool changeStudentsAdvisor(int studentId, int facultyId);
 	bool removeAdviseeFromFaculty(int studentId, int facultyId);
 	void rollback();
@@ -65,5 +66,13 @@ class FacultyDoesntExistException : public runtime_error
 {
 public:
 	FacultyDoesntExistException(string msg) : runtime_error(msg.c_str())
+	{}
+};
+
+//this class is used to signify that a given student has no advisor
+class StudentHasNoAdvisorException : public runtime_error
+{
+public:
+	StudentHasNoAdvisorException(string msg) : runtime_error(msg.c_str())
 	{}
 };

@@ -41,6 +41,8 @@ public:
 
 	string serialize();
 	Student* deserialize(istream& fileIn, Student& obj);
+
+	static Student* readFromFile(istream& fileIn);
 	//overloaded operator functions
 	//(got these from here: https://thispointer.com/c-how-to-read-or-write-objects-in-file-serializing-deserializing-objects/ )
 	//overload the << operator for writing to file

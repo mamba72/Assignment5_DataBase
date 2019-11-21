@@ -18,7 +18,7 @@ public:
 
 	GenLinkedList<int>* getAdvisees();
 	void addAdvisee(int studentId);
-
+	bool removeAdvisee(int studentId);
 
 
 	//overloaded operator functions

@@ -8,6 +8,7 @@ Assignment 5
 
 #pragma once
 #include "GenBST.h"
+#include "GenTreeNode.h"
 #include "Faculty.h"
 #include "Student.h"
 #include <fstream>
@@ -20,7 +21,13 @@ private:
 	static const string studentFileName;
 	const static string facultyFileName;
 
+	static void deserializeStudentNode(GenBST<int, Student*>* bst, GenTreeNode<int, Student*>* node, ifstream& fileIn);
+	static void deserializeFacultyNode(GenBST<int, Faculty*>* bst, GenTreeNode<int, Faculty*>* node, ifstream& fileIn);
+
 public:
+
+	static GenBST<int, Student*>* deserializeStudentTree(ifstream& fileIn);
+	static GenBST<int, Faculty*>* deserializeFacultyTree(ifstream& fileIn);
 
 	static GenBST<int, Student*>* ReadStudentTree();
 	static GenBST<int, Faculty*>* ReadFacultyTree(string fileName = facultyFileName);

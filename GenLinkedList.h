@@ -41,6 +41,21 @@ public:
 	unsigned int getSize();
 	T* toArray();
 
+	friend ostream& operator<<(ostream& fileOut, const GenLinkedList<T>& obj)
+	{
+		GenListNode<T>* curr = obj.front;
+
+		while (curr != NULL)
+		{
+			fileOut << curr->data << endl;
+			curr = curr->next;
+		}
+
+
+		return fileOut;
+
+	}
+
 };
 
 //this is a struct for throwing a custom exception when the list is empty
@@ -332,3 +347,18 @@ T* GenLinkedList<T>::toArray()
 	return myArray;
 
 }
+
+//ostream& operator<<(ostream& fileOut, const GenLinkedList<T>& obj)
+//{
+//	GenListNode<T>* curr = obj.front;
+//
+//	while (curr != NULL)
+//	{
+//		fileOut << curr->data << endl;
+//		curr = curr->next;
+//	}
+//
+//
+//	return fileOut;
+//
+//}

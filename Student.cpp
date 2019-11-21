@@ -205,3 +205,55 @@ Student* Student::deserialize(istream& fileIn, Student& obj)
 {
 
 }
+
+//essentially deserialize, but wont adjust a given object, just return a new one
+Student* Student::readFromFile(istream& fileIn)
+{
+	int numMembers = 6;
+	//string* linesFromFile = new string[6];
+	string linesFromFile[6];
+	string line = "";
+	for (int i = 0; i < numMembers; ++i)
+	{
+		getline(fileIn, line);
+		//if the line is empty, just skip it
+		if (line == "")
+		{
+			--i;
+			continue;
+		}
+
+		linesFromFile[i] = line;
+		cout << "Line Num: " << i << " Contents: " << line << endl;
+	}
+
+	/*cout << "Obj Name: " << this->name << endl;
+	cout << "Obj name size: " << sizeof(name) << endl;
+	cout << "Obj name length: " << name.length() << endl;*/
+
+	int id = stoi(linesFromFile[0]);
+	string name = linesFromFile[1];
+	string year = linesFromFile[2];
+	string major = linesFromFile[3];
+	double gpa = stod(linesFromFile[4]);
+	int advisor = stoi(linesFromFile[5]);
+
+	Student* newStudent = new Student();
+
+	cout << "Inserting to student" << endl;
+	//obj = Student(id, name, year, major, gpa, advisor);
+	newStudent->setId(id);
+	cout << "Inserted ID" << endl;
+	newStudent->setName(name);
+	//this->name = name;
+	cout << "Inserted Name" << endl;
+	newStudent->setLevel(year);
+	//this->level = year;
+	cout << "Inserted level" << endl;
+	newStudent->setMajor(major);
+	cout << "Inserted Major" << endl;
+	newStudent->setGpa(gpa);
+	cout << "Inserted GPA" << endl;
+	newStudent->setAdvisorId(advisor);
+	cout << "Inserted Advisor" << endl;
+}

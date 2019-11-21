@@ -12,9 +12,10 @@ This is a binary search tree databse
 6. https://stackoverflow.com/questions/4908539/a-way-in-c-to-hide-a-specific-function
 7. https://stackoverflow.com/questions/52685810/segmentation-fault-occur-while-reading-content-from-file-in-object-c
 8. https://stackoverflow.com/questions/5136295/switch-transfer-of-control-bypasses-initialization-of-when-calling-a-function
-9. 
-10. 
+9. https://www.geeksforgeeks.org/how-to-use-getline-in-c-when-there-are-black-lines-in-input/
+10. https://www.geeksforgeeks.org/serialize-deserialize-binary-tree/
 11. 
+12. 
 
 
 # Source Files:

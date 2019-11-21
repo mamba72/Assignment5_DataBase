@@ -10,8 +10,8 @@ Assignment 5
 
 DataBaseManager::DataBaseManager()
 {
-	masterStudent = new GenBST<int, Student*>();// FileIO::ReadStudentTree();
-	masterFaculty = new GenBST<int, Faculty*>();//FileIO::ReadFacultyTree();
+	masterStudent = FileIO::ReadStudentTree();
+	masterFaculty = FileIO::ReadFacultyTree();
 
 	//cout << "Master Student tree: " << masterStudent << endl;
 	//cout << "Is master student null?: " << (masterStudent == NULL) << endl;
@@ -24,10 +24,25 @@ DataBaseManager::DataBaseManager()
 
 DataBaseManager::~DataBaseManager()
 {
-	//FileIO::WriteFacultyTree(masterFaculty);
-	//FileIO::WriteStudentTree(masterStudent);
-
-	cout << "Wrote trees to file.\n";
+	try
+	{
+		FileIO::WriteFacultyTree(masterFaculty);
+	}
+	catch (BSTCouldNotOpenFileException e)
+	{
+		cout << "Failed writing faculty tree to file." << endl;
+		cout << e.what() << endl;
+	}
+	
+	try
+	{
+		FileIO::WriteStudentTree(masterStudent);
+	}
+	catch (BSTCouldNotOpenFileException e)
+	{
+		cout << "Failed writing student tree to file." << endl;
+		cout << e.what() << endl;
+	}
 }
 
 //prints the whole student tree
@@ -90,6 +105,10 @@ Faculty* DataBaseManager::getStudentsAdvisor(int id)
 		 student = masterStudent->getNode(id);
 		//return that student's advisor
 		
+		 //if that student's advisor id is -1, it has no adivsor
+		 if (student->getAdvisorId() == -1)
+			 throw StudentHasNoAdvisorException("Student by id of " + to_string(id) + " has no advisor.");
+
 	}
 	catch (NodeNotFoundException e)
 	{
@@ -129,10 +148,35 @@ void DataBaseManager::printAdvisees(int id)
 	}
 }
 
+//given a student, add them to the list and add their id to the provided advisor
 void DataBaseManager::addStudent(Student* student)
 {
-	masterStudent->insert(student->getId(),student);
-	//masterStudent->insert(student->id, student);
+	
+	//if the given student has an advisor id of -1, it doesnt have an advisor
+	if (student->getAdvisorId() != -1)
+	{
+		//now add that student's id to the provided advisors list
+
+		Faculty* faculty;
+
+		try
+		{
+			faculty = masterFaculty->getNode(student->getAdvisorId());
+
+		}
+		catch (NodeNotFoundException e)
+		{
+			cout << "The advisor id given with that student doesnt exist. \nPlease ensure that faculty member is in the database." << endl;
+			cout << "Failed to add student to database." << endl;
+			return;
+		}
+
+		faculty->addAdvisee(student->getId());
+	}
+	
+
+	//if the provided advisor id exists, add that student to the tree
+	masterStudent->insert(student->getId(), student);
 }
 
 void DataBaseManager::addFaculty(Faculty* faculty)
@@ -142,6 +186,18 @@ void DataBaseManager::addFaculty(Faculty* faculty)
 
 bool DataBaseManager::deleteFaculty(int id)
 {
+	Faculty* faculty = masterFaculty->getNode(id);
+	//if that faculty member has advisees, then remove that advisor id from that student
+	if (faculty->getAdvisees()->isEmpty() == false)
+	{
+		int* advisees = faculty->getAdvisees()->toArray();
+		//iterate through the advisee array setting all the student's advisor ids to -1
+		for (int i = 0; i < faculty->getAdvisees()->getSize() + 1; ++i)
+		{
+			changeStudentsAdvisor(advisees[i], -1);
+		}
+	}
+
 	return masterFaculty->deleteNode(id);
 }
 
@@ -157,7 +213,88 @@ bool DataBaseManager::deleteStudent(int id)
 	}
 }
 
+bool DataBaseManager::changeStudentsAdvisor(int studentId, int facultyId)
+{
 
+	Faculty* newAdvisor;
+	Faculty* oldAdvisor;
+	Student* student;
+
+	//grab the student
+	try
+	{
+		student = masterStudent->getNode(studentId);
+	}
+	catch (NodeNotFoundException e)
+	{
+		throw StudentDoesntExistException("The given student id does not exist in the tree");
+	}
+
+	//if the current advisor's id is the same as the new advisor id, then return true
+	//this means that the students current advisor is already the given advisor id
+	if (student->getAdvisorId() == facultyId)
+		return true;
+
+	if (facultyId != -1)
+	{
+		//grab the new advisor
+		try
+		{
+			//grab the new advisor
+			newAdvisor = masterFaculty->getNode(facultyId);
+		}
+		catch (NodeNotFoundException e)
+		{
+			throw FacultyDoesntExistException("The given faculty id does not exist in the tree.");
+		}
+
+		newAdvisor->addAdvisee(studentId);
+	}
+	
+	
+	//if it makes it here, everything checks out.
+
+	oldAdvisor = masterFaculty->getNode(student->getAdvisorId());
+	oldAdvisor->removeAdvisee(studentId);
+
+	
+
+	student->setAdvisorId(facultyId);
+
+	return true;
+}
+
+bool DataBaseManager::removeAdviseeFromFaculty(int studentId, int facultyId)
+{
+
+	//Faculty* newAdvisor;
+	Faculty* oldAdvisor;
+	Student* student;
+
+	//grab the student
+	try
+	{
+		student = masterStudent->getNode(studentId);
+	}
+	catch (NodeNotFoundException e)
+	{
+		throw StudentDoesntExistException("The given student id does not exist in the tree");
+	}
+
+	//if the current advisor's id is the same as the new advisor id, then return true
+	//this means that the students current advisor is already the given advisor id
+	if (student->getAdvisorId() == facultyId)
+		return true;
+
+	//if it makes it here, everything checks out.
+
+	oldAdvisor = masterFaculty->getNode(facultyId);
+	oldAdvisor->removeAdvisee(studentId);
+
+	student->setAdvisorId(-1);
+
+	return true;
+}
 
 
 
