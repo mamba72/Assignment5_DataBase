@@ -297,6 +297,14 @@ bool DataBaseManager::removeAdviseeFromFaculty(int studentId, int facultyId)
 }
 
 
+void DataBaseManager::rollback()
+{
+
+	FileIO::TreeBackups* backup = FileIO::readBackup(numBackups);
+
+	numBackups--;
+}
+
 
 
 //additional functions

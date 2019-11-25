@@ -22,7 +22,6 @@ using namespace std;
 int getUserChoice();
 Student* GatherStudentInfoFromUser();
 Faculty* GatherFacultyInfoFromUser();
-void SerializeTesting();
 
 int main(int argc, char** argv)
 {
@@ -326,90 +325,6 @@ int main(int argc, char** argv)
 
 
 	return 0;
-}
-
-
-void SerializeTesting()
-{
-	DataBaseManager* db = new DataBaseManager();
-	cout << "Created DataBase\n";
-
-	//add some sample student and faculty objects because reading from file is broken
-	Faculty* rene = new Faculty(23, "Rene German", "Professor", "Computer Science");
-	db->addFaculty(rene);
-
-	Faculty* kendra = new Faculty(10, "Kendra Day", "Professor", "Ethics");
-	db->addFaculty(kendra);
-	cout << "Added faculty\n";
-
-	Student* studentTest = new Student(16, "Stephen White2", "Sophomore", "Compsci", 3.7, 23);
-	db->addStudent(studentTest);
-
-	Student* arshia = new Student(12, "Arshia Behzad", "Sophomore", "Compsci", 3.7, 10);
-	db->addStudent(arshia);
-
-	FileIO::WriteStudentTree(db->masterStudent);
-	cout << "serialized tree" << endl;
-
-	ifstream fileIn;
-	fileIn.open("studentTable.txt");
-	cout << "Opened up file" << endl;
-	GenBST<int, Student*>* newTree = FileIO::deserializeStudentTree(fileIn);
-	cout << "Read from file" << endl;
-
-	cout << "Tree reference: " << newTree << endl;
-
-	cout << "Root reference: " << newTree->root << endl;
-
-	cout << "root data: " << *(newTree->root->data) << endl;
-
-
-	cout << "End testing" << endl;
-}
-
-
-void ProperTesting(DataBaseManager* db)
-{
-	Faculty* rene = new Faculty(23, "Rene German", "Professor", "Computer Science");
-	db->addFaculty(rene);
-	cout << "Added faculty\n";
-
-	Student* studentTest = new Student(16, "Stephen White2", "Sophomore", "Compsci", 3.7, 23);
-	db->addStudent(studentTest);
-	cout << "Added student\n";
-	//db->printAllStudents();
-	//cout << "my advisor: " << db->getStudentsAdvisor(2323381) << endl;
-
-	db->masterStudent->printTree();
-
-	cout << "Printed tree" << endl;
-
-	//cout << db->masterStudent->peek()->data->getName() << endl;
-
-	//cout << db->getStudent(2323381)->getName() << endl;
-	try
-	{
-		cout << db->findStudent(2323381)->getName() << endl;
-	}
-	catch (StudentDoesntExistException e)
-	{
-		cout << e.what() << endl;
-	}
-	catch (TreeEmptyException e)
-	{
-		cout << e.what() << endl;
-	}
-
-	//get the student's advisor
-	Faculty* advisor = db->getStudentsAdvisor(16);
-	cout << "Advisor: " << *advisor << endl;
-
-	cout << *(db->masterStudent->getNode(16)) << endl;
-
-	cout << "Printed Students\n";
-
-	cout << "number of nodes: " << db->masterStudent->numNodes << endl;
-
 }
 
 

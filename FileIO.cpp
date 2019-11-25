@@ -11,15 +11,16 @@ Assignment 5
 
 const string FileIO::studentFileName = "studentTable.txt";
 const string FileIO::facultyFileName = "facultyTable.txt";
+const string FileIO::backupFolderName = "Backups";
 
 /*
 This function will deserialize the student tree from the studentTable file and return it. 
 If the file does not exist, it will return an empty student tree.
 */
-GenBST<int, Student*>* FileIO::ReadStudentTree()
+GenBST<int, Student*>* FileIO::ReadStudentTree(string fileName)
 {	
 	ifstream file;
-	file.open(studentFileName);
+	file.open(fileName);
 
 	GenBST<int, Student*>* studentTree;// = new GenBST<int, Student*>(); //studentTree;
 
@@ -41,7 +42,7 @@ GenBST<int, Student*>* FileIO::ReadStudentTree()
 	}*/
 
 	studentTree = deserializeStudentTree(file);
-
+	file.close();
 	return studentTree;
 }
 
@@ -52,7 +53,7 @@ If the file does not exist, it will return an empty faculty tree.
 GenBST<int, Faculty*>* FileIO::ReadFacultyTree(string fileName)
 {
 	ifstream file;
-	file.open(facultyFileName);
+	file.open(fileName);
 
 	GenBST<int, Faculty*>* facultyTree;
 
@@ -65,7 +66,7 @@ GenBST<int, Faculty*>* FileIO::ReadFacultyTree(string fileName)
 
 	facultyTree = deserializeFacultyTree(file);
 
-
+	file.close();
 	return facultyTree;
 }
 
@@ -84,7 +85,7 @@ GenBST<int, Faculty*>* FileIO::ReadFacultyTree(string fileName)
 //	return true;
 //}
 
-bool FileIO::WriteFacultyTree(GenBST<int, Faculty*>* tree)
+bool FileIO::WriteFacultyTree(GenBST<int, Faculty*>* tree, string fileName)
 {
 	//ofstream file_obj;
 	////open the file
@@ -97,15 +98,15 @@ bool FileIO::WriteFacultyTree(GenBST<int, Faculty*>* tree)
 	////write the object to the file
 	////file_obj.write((char*)&tree, sizeof(tree));
 
-	tree->serialize(facultyFileName);
+	tree->serialize(fileName);
 
 	return true;
 }
 
 //using strings and doing it myself because the other way doesnt seem to work
-bool FileIO::WriteStudentTree(GenBST<int, Student*>* tree)
+bool FileIO::WriteStudentTree(GenBST<int, Student*>* tree, string fileName)
 {
-	tree->serialize(studentFileName);
+	tree->serialize(fileName);
 	return true;
 
 }
@@ -217,34 +218,34 @@ void FileIO::deserializeStudentNode(GenBST<int, Student*>* bst, GenTreeNode<int,
 		return;
 	id = stoi(response);
 
-	cout << "id: " << id << endl;
+	//cout << "id: " << id << endl;
 	getline(fileIn, response);
 	if (response == MARKER)
 		return;
 	name = response;
-	cout << "name: " << name << endl;
+	//cout << "name: " << name << endl;
 	getline(fileIn, response);
 	if (response == MARKER)
 		return;
 	year = response;
-	cout << "year: " << year << endl;
+	//cout << "year: " << year << endl;
 	getline(fileIn, response);
 	if (response == MARKER)
 		return;
 	department = response;
-	cout << "major: " << department << endl;
+	//cout << "major: " << department << endl;
 	getline(fileIn, response);
 	if (response == MARKER)
 		return;
 	gpa = stod(response);
-	cout << "gpa: " << gpa << endl;
+	//cout << "gpa: " << gpa << endl;
 	getline(fileIn, response);
 	if (response == MARKER)
 		return;
 	advisorId = stoi(response);
-	cout << "advisorid: " << advisorId << endl;
+	//cout << "advisorid: " << advisorId << endl;
 
-	cout << "From file: " << endl;
+	/*cout << "From file: " << endl;
 	cout << "\t" << key << endl;
 	cout << "\t" << id << endl;
 	cout << "\t" << name << endl;
@@ -252,7 +253,7 @@ void FileIO::deserializeStudentNode(GenBST<int, Student*>* bst, GenTreeNode<int,
 	cout << "\t" << department << endl;
 	cout << "\t" << advisorId << endl;
 
-	cout << "Creating new node" << endl;
+	cout << "Creating new node" << endl;*/
 	Student* newStudent = new Student(id, name, year, department, gpa, advisorId);
 
 	node = new GenTreeNode<int, Student*>(id, newStudent);
@@ -287,55 +288,55 @@ void FileIO::deserializeFacultyNode(GenBST<int, Faculty*>* bst, GenTreeNode<int,
 
 	while (response == "")
 	{
-		cout << "found new line" << endl;
+		//cout << "found new line" << endl;
 		getline(fileIn, response);
 
 		if (fileIn.eof() == true)
 		{
-			cout << "reached end of file." << endl;
+			//cout << "reached end of file." << endl;
 			return;
 		}
 
 	}
 
-	cout << "Response: " << response << endl;
+	//cout << "Response: " << response << endl;
 	if (response == MARKER || response == "empty")
 		return;
 
 	key = stoi(response);
-	cout << "Key: " << key << endl;
+	//cout << "Key: " << key << endl;
 	getline(fileIn, response);
 	if (response == MARKER)
 		return;
 	id = stoi(response);
 
-	cout << "id: " << id << endl;
+	//cout << "id: " << id << endl;
 	getline(fileIn, response);
 	if (response == MARKER)
 		return;
 	name = response;
-	cout << "name: " << name << endl;
+	//cout << "name: " << name << endl;
 	getline(fileIn, response);
 	if (response == MARKER)
 		return;
 	level = response;
-	cout << "Level: " << level << endl;
+	//cout << "Level: " << level << endl;
 	getline(fileIn, response);
 	if (response == MARKER)
 		return;
 	department = response;
-	cout << "Department: " << department << endl;
+	//cout << "Department: " << department << endl;
 
 
-	cout << "From file: " << endl;
-	cout << "\t" << key << endl;
-	cout << "\t" << id << endl;
-	cout << "\t" << name << endl;
-	cout << "\t" << level << endl;
-	cout << "\t" << department << endl;
-	//cout << "\t" << advisorId << endl;
+	//cout << "From file: " << endl;
+	//cout << "\t" << key << endl;
+	//cout << "\t" << id << endl;
+	//cout << "\t" << name << endl;
+	//cout << "\t" << level << endl;
+	//cout << "\t" << department << endl;
+	////cout << "\t" << advisorId << endl;
 
-	cout << "Creating new node" << endl;
+	//cout << "Creating new node" << endl;
 	Faculty* newFaculty = new Faculty(id, name, level, department);
 
 	//read in the advisees
@@ -351,11 +352,11 @@ void FileIO::deserializeFacultyNode(GenBST<int, Faculty*>* bst, GenTreeNode<int,
 		}
 		catch (invalid_argument e)
 		{
-			cout << "No more advisee ids found." << endl;
+			//cout << "No more advisee ids found." << endl;
 			break;
 		}
 		
-		cout << "adviseeid: " << id << endl;
+		//cout << "adviseeid: " << id << endl;
 
 		newFaculty->addAdvisee(id);
 	} while (response != "");
@@ -381,3 +382,33 @@ GenBST<int, Faculty*>* FileIO::deserializeFacultyTree(ifstream& fileIn)
 
 	return newTree;
 }
+
+
+//backup the trees to files
+void FileIO::backupTrees(GenBST<int, Student*>* studentTree, GenBST<int, Faculty*>* facultyTree, int backupNum)
+{
+	
+	string studentBackupName = backupFolderName + "StudentBackup" + to_string(backupNum) + ".txt";
+	string facultyBackupName = backupFolderName + "FacultyBackup" + to_string(backupNum) + ".txt";
+
+	WriteStudentTree(studentTree,studentBackupName);
+
+	WriteFacultyTree(facultyTree, facultyBackupName);
+
+}
+
+FileIO::TreeBackups* FileIO::readBackup(int backupNum)
+{
+	string studentBackupName = backupFolderName + "StudentBackup" + to_string(backupNum) + ".txt";
+	string facultyBackupName = backupFolderName + "FacultyBackup" + to_string(backupNum) + ".txt";
+
+	TreeBackups* backup = new TreeBackups();
+
+
+	backup->studentTree = ReadStudentTree(studentBackupName);
+	backup->facultyTree = ReadFacultyTree(facultyBackupName);
+
+	return backup;
+}
+
+

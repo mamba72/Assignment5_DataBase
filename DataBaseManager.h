@@ -15,14 +15,20 @@ class DataBaseManager
 {
 private:
 	//private vars
-	
+	GenBST<int, Student*>* masterStudent;
+	GenBST<int, Faculty*>* masterFaculty;
+
+	int numBackups = 0;
+	int maxBackups = 5;
+
+	void makeBackup();
 	
 	//helper functions
 
+
 public:
 
-	GenBST<int, Student*>* masterStudent;
-	GenBST<int, Faculty*>* masterFaculty;
+	
 
 
 	DataBaseManager();
