@@ -80,6 +80,7 @@ int main(int argc, char** argv)
 	DataBaseManager* db = new DataBaseManager();
 	cout << "Created DataBase\n";
 
+
 	////add some sample student and faculty objects because reading from file is broken
 	//Faculty* rene = new Faculty(23, "Rene German", "Professor", "Computer Science");
 	//db->addFaculty(rene);
@@ -88,11 +89,11 @@ int main(int argc, char** argv)
 	//db->addFaculty(kendra);
 	//cout << "Added faculty\n";
 
-	/*Student* studentTest = new Student(16, "Stephen White2", "Sophomore", "Compsci", 3.7, 23);
-	db->addStudent(studentTest);
+	//Student* studentTest = new Student(16, "Stephen White2", "Sophomore", "Compsci", 3.7, 23);
+	//db->addStudent(studentTest);
 
-	Student* arshia = new Student(12, "Arshia Behzad", "Sophomore", "Compsci", 3.7, 10);
-	db->addStudent(arshia);*/
+	//Student* arshia = new Student(12, "Arshia Behzad", "Sophomore", "Compsci", 3.7, 10);
+	//db->addStudent(arshia);
 
 
 
@@ -300,9 +301,22 @@ int main(int argc, char** argv)
 			break;
 		}
 		case 12://remove an advisee from a faculty member given the ids
+		{
+			cout << "Enter the student's id" << endl;
+			int studentId;
+			cin >> studentId;
+
+			cout << "Enter the faculty member's id" << endl;
+			int facultyId;
+			cin >> facultyId;
+
+			db->removeAdviseeFromFaculty(studentId, facultyId);
 
 			break;
+		}
 		case 13://rollback
+			db->rollback();
+			cout << "Rolled back" << endl;
 			break;
 		case 14://if they chose exit
 			break;

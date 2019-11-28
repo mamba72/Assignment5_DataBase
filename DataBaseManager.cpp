@@ -13,12 +13,8 @@ DataBaseManager::DataBaseManager()
 	masterStudent = FileIO::ReadStudentTree();
 	masterFaculty = FileIO::ReadFacultyTree();
 
-	//cout << "Master Student tree: " << masterStudent << endl;
-	//cout << "Is master student null?: " << (masterStudent == NULL) << endl;
+	numBackups = 0;
 
-	//cout << "(From Constructor) Printing student tree straight from file:\n";
-	//cout << "Number of nodes in student tree: " << masterStudent->numNodes << endl;
-	//masterStudent->printTree();
 	cout << endl;
 }
 
@@ -142,7 +138,7 @@ void DataBaseManager::printAdvisees(int id)
 	int* adviseeArray = faculty->getAdvisees()->toArray();
 
 
-	for (int i = 0; i <= faculty->getAdvisees()->getSize(); ++i)
+	for (int i = 0; i < faculty->getAdvisees()->getSize(); ++i)
 	{
 		cout << *(masterStudent->getNode(adviseeArray[i])) << endl;
 	}
@@ -203,6 +199,9 @@ bool DataBaseManager::deleteFaculty(int id)
 
 bool DataBaseManager::deleteStudent(int id)
 {
+
+
+
 	try
 	{
 		return masterStudent->deleteNode(id);
@@ -215,6 +214,8 @@ bool DataBaseManager::deleteStudent(int id)
 
 bool DataBaseManager::changeStudentsAdvisor(int studentId, int facultyId)
 {
+	FileIO::backupTrees(masterStudent, masterFaculty, numBackups % maxBackups);
+	numBackups++;
 
 	Faculty* newAdvisor;
 	Faculty* oldAdvisor;
@@ -267,6 +268,9 @@ bool DataBaseManager::changeStudentsAdvisor(int studentId, int facultyId)
 bool DataBaseManager::removeAdviseeFromFaculty(int studentId, int facultyId)
 {
 
+	FileIO::backupTrees(masterStudent, masterFaculty, numBackups % maxBackups);
+	numBackups++;
+
 	//Faculty* newAdvisor;
 	Faculty* oldAdvisor;
 	Student* student;
@@ -300,15 +304,10 @@ bool DataBaseManager::removeAdviseeFromFaculty(int studentId, int facultyId)
 void DataBaseManager::rollback()
 {
 
-	FileIO::TreeBackups* backup = FileIO::readBackup(numBackups);
+	FileIO::TreeBackups* backup = FileIO::readBackup(numBackups-1);
+
+	masterStudent = backup->studentTree;
+	masterFaculty = backup->facultyTree;
 
 	numBackups--;
 }
-
-
-
-//additional functions
-//Student* DataBaseManager::getStudent(int id)
-//{
-//	return masterStudent->getNode(id);
-//}

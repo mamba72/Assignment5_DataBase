@@ -27,6 +27,7 @@ GenBST<int, Student*>* FileIO::ReadStudentTree(string fileName)
 	//if the file cant be opened, create an empty bst
 	if (file.is_open() == false)
 	{
+		cout << "Couldnt open file named " << fileName << endl;
 		return new GenBST<int, Student*>();
 	}
 		
@@ -59,7 +60,11 @@ GenBST<int, Faculty*>* FileIO::ReadFacultyTree(string fileName)
 
 	//if the file cant be opened, create an empty bst
 	if (file.is_open() == false)
-		return new GenBST<int, Faculty*> (); //facultyTree;
+	{
+		cout << "Couldnt open file named " << fileName << endl;
+		return new GenBST<int, Faculty*>(); //facultyTree;
+	}
+		
 
 	//read the file
 	//file.read((char*)&facultyTree, sizeof(facultyTree));
@@ -70,34 +75,8 @@ GenBST<int, Faculty*>* FileIO::ReadFacultyTree(string fileName)
 	return facultyTree;
 }
 
-//bool FileIO::WriteStudentTree(GenBST<int, Student*>* tree)
-//{
-//	ofstream file_obj;
-//	//open the file
-//	file_obj.open(studentFileName);
-//
-//	//if the file didnt open, return false
-//	if (file_obj.is_open() == false)
-//		return false;
-//
-//	//write the object to the file
-//	file_obj.write((char*)&tree, sizeof(tree));
-//	return true;
-//}
-
 bool FileIO::WriteFacultyTree(GenBST<int, Faculty*>* tree, string fileName)
 {
-	//ofstream file_obj;
-	////open the file
-	//file_obj.open(facultyFileName);
-
-	////if the file didnt open, return false
-	//if (file_obj.is_open() == false)
-	//	return false;
-
-	////write the object to the file
-	////file_obj.write((char*)&tree, sizeof(tree));
-
 	tree->serialize(fileName);
 
 	return true;
@@ -125,56 +104,6 @@ GenBST<int, Student*>* FileIO::deserializeStudentTree(ifstream& fileIn)
 	return newTree;
 }
 
-//recursive node stuffs
-//void FileIO::deserializeStudentNode(GenBST<int, Student*>* bst, GenTreeNode<int, Student*>* node, FILE* fileIn)
-//{
-//	int key;
-//	int id;
-//	string name;
-//	string year;
-//	string department;
-//	double gpa;
-//	int advisorId;
-//
-//	if (!fscanf(fileIn, "%i", &key))
-//		return;
-//
-//	cout << "Key: " << key << endl;
-//
-//	if (!fscanf(fileIn, "%i", &id))
-//		return;
-//
-//	cout << "id: " << id << endl;
-//
-//	if (!fscanf(fileIn, "%s", &name))
-//		return;
-//	cout << "name: " << name << endl;
-//	if (!fscanf(fileIn, "%s", &year))
-//		return;
-//	cout << "year: " << year << endl;
-//	if (!fscanf(fileIn, "%s", &department))
-//		return;
-//	cout << "major: " << department << endl;
-//	if (!fscanf(fileIn, "%d", &gpa))
-//		return;
-//	cout << "gpa: " << gpa << endl;
-//	if (!fscanf(fileIn, "%i", &advisorId))
-//		return;
-//	cout << "advisorid: " << advisorId << endl;
-//
-//	cout << "From file: " << endl;
-//	cout << "\t" << key << endl;
-//	cout << "\t" << id << endl;
-//	cout << "\t" << name << endl;
-//	cout << "\t" << year << endl;
-//	cout << "\t" << department << endl;
-//
-//
-//	//Student* newStudent = new Student(id, name, year, department, gpa, advisorId);
-//	//GenTreeNode<int, Student*>* newNode = new GenTreeNode<int, Student*>(key, );
-//
-//	
-//}
 
 void FileIO::deserializeStudentNode(GenBST<int, Student*>* bst, GenTreeNode<int, Student*>* node, ifstream& fileIn)
 {
@@ -213,10 +142,13 @@ void FileIO::deserializeStudentNode(GenBST<int, Student*>* bst, GenTreeNode<int,
 
 	key = stoi(response);
 	//cout << "Key: " << key << endl;
+
+
 	getline(fileIn, response);
 	if (response == MARKER)
 		return;
 	id = stoi(response);
+
 
 	//cout << "id: " << id << endl;
 	getline(fileIn, response);
@@ -403,6 +335,7 @@ FileIO::TreeBackups* FileIO::readBackup(int backupNum)
 	string facultyBackupName = backupFolderName + "FacultyBackup" + to_string(backupNum) + ".txt";
 
 	TreeBackups* backup = new TreeBackups();
+
 
 
 	backup->studentTree = ReadStudentTree(studentBackupName);

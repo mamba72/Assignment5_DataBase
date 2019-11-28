@@ -50,10 +50,7 @@ public:
 			fileOut << curr->data << endl;
 			curr = curr->next;
 		}
-
-
 		return fileOut;
-
 	}
 
 };
