@@ -19,8 +19,16 @@ This is a binary search tree databse
 
 
 # Source Files:
-1. 
-2. 
-3. 
+1. DatabaseManager .h and .cpp
+2. Faculty  .h and .cpp
+3. FileIO  .h and .cpp
+4. Person  .h and .cpp
+5. Student  .h and .cpp
+6. GenBST.h
+7. GenTreeNode.h
+8. GenLinked.h
+9. GenListNode.h
+10. 
 
 # Instructions:
+1. Run DataBaseManager.out and follow the onscreen prompts
